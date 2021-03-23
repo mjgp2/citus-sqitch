@@ -6,3 +6,11 @@ RUN apk --no-cache --virtual .build-deps --update add clang clang-dev gcc make g
   apk del .build-deps && \
   echo "shared_preload_libraries = 'hll'" >> /usr/local/share/postgresql/postgresql.conf.sample
 
+RUN apk add --no-cache --update wget build-base perl tzdata postgresql-dev postgresql-client libpq perl-dev && \
+ cpan App::cpanminus && \
+ cpanm --notest -q App::Sqitch && \
+ cpanm --notest -q DBD::Pg && \
+ cpanm --notest -q TAP::Parser::SourceHandler::pgTAP && \
+ rm -rf ~/.cpan ~/.cpanm && \
+ apk del --purge postgresql-dev perl-dev build-base wget && \
+ ln -sf /usr/share/zoneinfo/UTC  /etc/localtime
