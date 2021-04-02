@@ -1,16 +1,15 @@
-FROM postgres:12-alpine
+FROM postgres:12.6
 
-RUN apk --no-cache --virtual .build-deps --update add clang clang-dev gcc make g++ zlib-dev curl llvm && \
-  ( curl https://codeload.github.com/citusdata/postgresql-hll/tar.gz/refs/tags/v2.15.1 | tar -xz -C . ) \
-  && cd ./postgresql-hll-2.15.1 && make && make install && \
-  apk del .build-deps && \
-  echo "shared_preload_libraries = 'hll'" >> /usr/local/share/postgresql/postgresql.conf.sample
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl build-essential \
+      "postgresql-plpython3-$PG_MAJOR=$PG_VERSION" "postgresql-server-dev-$PG_MAJOR=$PG_VERSION" "postgresql-client-$PG_MAJOR=$PG_VERSION"
 
-RUN apk add --no-cache --update wget build-base perl tzdata postgresql-dev postgresql-client libpq perl-dev && \
- cpan App::cpanminus && \
- cpanm --notest -q App::Sqitch && \
- cpanm --notest -q DBD::Pg && \
- cpanm --notest -q TAP::Parser::SourceHandler::pgTAP && \
- rm -rf ~/.cpan ~/.cpanm && \
- apk del --purge postgresql-dev perl-dev build-base wget && \
- ln -sf /usr/share/zoneinfo/UTC  /etc/localtime
+RUN ( curl https://codeload.github.com/citusdata/postgresql-hll/tar.gz/refs/tags/v2.15.1 | tar -xz -C . ) && \
+     cd ./postgresql-hll-2.15.1 && make && make install && \
+     echo "shared_preload_libraries = 'hll'" >> /usr/share/postgresql/postgresql.conf.sample
+
+RUN apt-get install -y sqitch libdbd-pg-perl 
+
+RUN apt-get install -y python3-boto  && \
+  ( curl -L https://github.com/chimpler/postgres-aws-s3/tarball/master  | tar -xz -C . ) && \
+  cd ./chimpler-postgres-aws-s3-* && make && make install
