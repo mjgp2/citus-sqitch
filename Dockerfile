@@ -7,7 +7,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends curl build-essential ca-certificates \
       libtap-parser-sourcehandler-pgtap-perl "postgresql-plpython3-$PG_MAJOR" "postgresql-$PG_MAJOR-cron" \
       "postgresql-$PG_MAJOR-partman" "postgresql-$PG_MAJOR-pgtap" "postgresql-server-dev-$PG_MAJOR" "postgresql-client-$PG_MAJOR" \
-      python3-boto sqitch libdbd-pg-perl \
+      python3-boto3 sqitch libdbd-pg-perl \
   && ( curl https://codeload.github.com/citusdata/postgresql-hll/tar.gz/refs/tags/v2.17 | tar -xz -C . ) \
   && cd ./postgresql-hll-2.17 && make && make install \
   && ( curl -L https://github.com/chimpler/postgres-aws-s3/tarball/master  | tar -xz -C . ) \
