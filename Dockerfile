@@ -15,4 +15,7 @@ RUN apt-get update \
   && echo "shared_preload_libraries = 'hll,pg_cron,pg_stat_statements'" >> /usr/share/postgresql/postgresql.conf.sample \
   && echo "cron.database_name='${POSTGRES_DB:-postgres}'" >> /usr/share/postgresql/postgresql.conf.sample \
   && apt-get purge -y --auto-remove build-essential "postgresql-server-dev-$PG_MAJOR"\
-  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
+  && echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen \
+  && locale-gen
+ENV LANG en_US.utf8
