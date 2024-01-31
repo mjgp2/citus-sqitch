@@ -1,7 +1,6 @@
 FROM postgres:15.3
 
-# docker buildx build --push --platform linux/amd64 -t mjgp2/pg-sqitch:15.3 .
-# docker buildx build --push --platform linux/arm64 -t mjgp2/pg-sqitch:15.3 .
+# docker buildx build --push --platform linux/amd64,linux/arm64 -t mjgp2/pg-sqitch:15.3 .
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends curl build-essential ca-certificates \
@@ -18,4 +17,13 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
   && echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen \
   && locale-gen
+RUN cat >> /usr/share/postgresql/postgresql.conf.sample <<EOF
+fsync = off
+synchronous_commit = off
+full_page_writes = off
+checkpoint_timeout = 1h
+max_wal_size = 1GB
+shared_buffers = 256MB
+work_mem = 50MB
+EOF
 ENV LANG en_US.utf8
